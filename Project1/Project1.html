@@ -211,10 +211,12 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-<h2 id="2.-Hypothesis">2. Hypothesis<a class="anchor-link" href="#2.-Hypothesis">&#182;</a></h2><p><strong>Null Hypothesis: H<sub>0</sub>: </strong> The Incongruent trial can be completed in as much time as it takes to complete the Congruent trial or even less. <strong>&mu;<sub>c</sub></strong> &ge; <strong>&mu;<sub>ic</sub></strong></p>
-<p><strong>Alternate Hypothesis: H<sub>1</sub>:</strong> It takes longer to complete the incongruent trial. <strong>&mu;<sub>c</sub></strong>&lt; <strong>&mu;<sub>ic</sub></strong></p>
-<p>We need to do a 2 tailed t-test since we are not concerned about the direction of the error we only have to check if there was a significant difference in the means for the two tasks.</p>
-<p>A one-tailed test in a positive direction needs to be carried out as we expect the value of $ \bar X$ to be greater than &mu;</p>
+<h2 id="2.-Hypothesis">2. Hypothesis<a class="anchor-link" href="#2.-Hypothesis">&#182;</a></h2><p>Let population mean from Congruent trial and Incongruent trial be denoted as <strong>&mu;<sub>c</sub></strong> and  <strong>&mu;<sub>ic</sub></strong> respectively.</p>
+<p>The data provided contains samples from 24 participants. The research question we are trying to answer is to find if there is a significant difference in the population means of the given samples. Since it is a controlled experiment, in this case we can also be sure of a causal inference.</p>
+<p><strong>Null Hypothesis: H<sub>0</sub>: </strong> &mu;<sub>c</sub> =  &mu;<sub>ic</sub> i.e., there is no significant difference between the population means for congruent and incongruent trials.</p>
+<p><strong>Alternate Hypothesis: H<sub>1</sub>:</strong> &mu;<sub>c</sub> $\neq$ &mu;<sub>ic</sub> i.e., there is a significant difference between the times taken for both the trials.</p>
+<p>We need to do a 2 tailed t-test since we are not concerned about the direction of the error we only have to check if there was a significant difference in the population means for the two tasks.</p>
+<p>In the Stroop test, same participant is shown two set of words and hence the samples given are dependent samples. Hence the above mentioned Null Hypothesis can also be defined as  &mu;<sub>c</sub> -  &mu;<sub>ic</sub> = 0</p>
 <hr>
 
 </div>
@@ -228,17 +230,15 @@ div#notebook {
 <hr>
 <h2 id="3.-Descriptive-Statistics">3. Descriptive Statistics<a class="anchor-link" href="#3.-Descriptive-Statistics">&#182;</a></h2><p><strong>Congruent</strong></p>
 <ul>
-<li>Mean: 14.051125  </li>
-<li>Median: 14.3565  </li>
-<li>Variance: 12.1411528594  </li>
-<li>Standard Deviation 3.48441571277  </li>
+<li>Mean: 14.05   </li>
+<li>Median: 14.36   </li>
+<li>Standard Deviation 3.56 </li>
 </ul>
 <p><strong>Incongruent</strong></p>
 <ul>
-<li>Mean: 22.0159166667  </li>
-<li>Median: 21.0175  </li>
-<li>Variance: 22.0529338264  </li>
-<li>Standard Deviation 4.69605513451  </li>
+<li>Mean: 22.02 </li>
+<li>Median: 21.02  </li>
+<li>Standard Deviation 4.80 </li>
 </ul>
 <hr>
 
@@ -264,23 +264,15 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="5.-Performing-the-statistical-test">5. Performing the statistical test<a class="anchor-link" href="#5.-Performing-the-statistical-test">&#182;</a></h2><p>Assumptions:<br>
-Population = Congruent Trial<br>
-Sample = Incongruent Trial<br>
-&alpha; = 0.05</p>
-<p>Population mean = 14.05<br>
-Sample Mean = 22.02<br>
-number of samples n = 24<br>
-degrees of freedom df = 23<br>
-t-critical = 1.714<br>
-Sample Standard Deviation = 23.01<br>
-Standard Error of Mean = 4.7<br>
-Mean difference = 7.96<br>
-t-statistic t = 1.70</p>
-<p>The t-statistic does not fall in the critical region, it is just outside the critical region for the 95% confidence interval.</p>
-<p>The value of P is hence greater than .05</p>
-<p>The results are not Statistically significant. Hence the null hypothesis cannot be rejected.</p>
-<p>These results do not match up with my expectation.</p>
+<h2 id="5.-Performing-the-statistical-test">5. Performing the statistical test<a class="anchor-link" href="#5.-Performing-the-statistical-test">&#182;</a></h2><p>Mean of the differences = -7.96<br>
+Standard deviation of the differences = 4.86<br>
+t-statistic = -8.02<br>
+t-critical = +2.069, -2.069 for two tailed t-test with &alpha; value 0.05 and 23 degrees of freedom</p>
+<p>The t-statistic falls in the critical region for 95% Confidence Interval.</p>
+<p>The value of P is hence less than .05</p>
+<p>The results are Statistically significant. Hence the null hypothesis can be rejected. This means that participants took significantly less time to complete the Congruent trial.</p>
+<p>Since this was a controlled experiment we can say that the types of word shown had a causal effect on the time taken to finish the task, in this case congruent or incongruent.</p>
+<p>These results match my expectations.</p>
 
 </div>
 </div>
@@ -305,19 +297,6 @@ t-statistic t = 1.70</p>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre> 
-</pre></div>
-
-</div>
-</div>
-</div>
-
 </div>
     </div>
   </div>
