@@ -223,22 +223,22 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Mann Whitnety U test  </strong><br>
+<p><strong>Mann Whitney U test  </strong><br>
 Reasons for using this test</p>
 <ul>
 <li>The data for the entries per hour during rainy and non rainy days does not follow a normal distribution.</li>
 <li>It is a non-parametric test and does not make any assumptions about the underlying probability distribution.  </li>
 </ul>
-<p><strong>Null Hypothesis $H_0$:</strong> The population mean of number of hourly entries on rainy days is less than the number of hourly entries on non-rainy days.</p>
-<p><strong>One tailed test since we not only want to show that the populations are different but we also need to find the direction (in this case that population mean on rainy days is lesser).</strong></p>
+<p><strong>Null Hypothesis $H_0$:</strong> Let $X$ and $Y$ denote the population of ridership on rainy and non-rainy days respectively. Let $x$ be the random samples taken from population $X$  abd $y$ be the random samples drawn from population $Y$. The null hypothesis states that $P(x > y) = 0.5$ i.e., the ridership on rainy days is likely to be higher than on non-rainy days.</p>
+<p><strong>Two tailed test will be used as we would like to know if the samples drawn from rainy days are likely to be higher than the samples drawn from non-rainy days and this is what the standard Mann Whitney U test does</strong></p>
 <p><strong>P-critical value = 0.05</strong></p>
 <p><strong>Results  </strong></p>
 <ul>
 <li>Mean on rainy days: 1105.446</li>
 <li>Mean on non-rainy days: 1090.279</li>
-<li>P value: 0.0249</li>
+<li>P value: 0.025*2 = 0.05 (Rounded to three decimal places)</li>
 </ul>
-<p><strong>Since the P-value is less than P-critical, we can conclude that both the population means are significantly different. Also since this was a one sided test, we have enough evidence to reject the null hypothesis. Also the value returned from the scipy.stats function for Mann Whitney U test is for one sided test.</strong></p>
+<p><strong>Since the P-value  returned is for a one sided t-test, by multiplyig it with 2 we get the P-value for a two sided test and it is equal to 0.05. Hence we can conclude that there is not enough evidence to discard the null hypothesis. Also this means that the samples drawn from raniy days are likely to be higher than the samples drawn from non-rainy days</strong></p>
 <hr>
 
 </div>
@@ -260,7 +260,7 @@ Reasons for using this test</p>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Approach</strong> : OLS using stats models</p>
-<p><strong>Features Used</strong> : I added additional feture 'UNIT'</p>
+<p><strong>Features Used</strong> : The features used are 'rain', 'precipi', 'Hour', 'meantempi' and 'UNIT'</p>
 <p><strong>Reason for using that particular feature</strong> : To start with I experimented by adding the obviously straightforward features like 'rain' and 'fog' but they did not gie a better $R^2$ value and hence by trial and error I ended up with the feature 'UNIT'.</p>
 <p><strong>Parameters of the non dummy variables</strong>:</p>
 <ul>
@@ -387,8 +387,8 @@ Reasons for using this test</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>From my analysis, more people travel during the non-rainy days. This conclusion can be drawn from the statistical analysis of section 1 where the P-valu was less than the P-critical value. 
-Also the linear regression included the variable 'rain' which shows that the hourly entries id dependent on that variable.</p>
+<p>From my analysis, more people travel during the rainy days. This conclusion can be drawn from the statistical analysis of section 1 where the P-value was equal to the P-critical value of 0.05, and from the analysis we could not reject the null hypothesis.</p>
+<p>Also from the linear regression, the parameter for the coefficient if  feature 'rain' is 29.464529. This shows that there is a positive relationship between 'rain' and the output variable 'Entries per hour'</p>
 <hr>
 
 </div>
