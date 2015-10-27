@@ -52,7 +52,7 @@ def print_statistics(data_dict):
             print feature, total_nans[feature]
     print "***********STATS END*******************"
 
-def analyze_different_classifiers():
+def analyze_different_classifiers(features, labels):
 
     classifier_names = [
     "Random Forests",
@@ -95,7 +95,7 @@ def analyze_different_classifiers():
 
     for name, classifier, parm in zip(classifier_names, classifiers, classifier_parms):
         print "Getting results for:", name
-        clf = GridSearchCV(classifier, parm)
+        clf = GridSearchCV(classifier, parm, scoring="f1")
         clf = clf.fit(features, labels)
         test_classifier(clf.best_estimator_, my_dataset, features_list)
 
@@ -143,10 +143,13 @@ def test_classifier(clf, dataset, feature_list, folds = 1000):
         recall = 1.0*true_positives/(true_positives+false_negatives)
         f1 = 2.0 * true_positives/(2*true_positives + false_positives+false_negatives)
         f2 = (1+2.0*2.0) * precision*recall/(4*precision + recall)
+
         print clf
         print PERF_FORMAT_STRING.format(accuracy, precision, recall, f1, f2, display_precision = 5)
         print RESULTS_FORMAT_STRING.format(total_predictions, true_positives, false_positives, false_negatives, true_negatives)
         print ""
+
+        return precision, recall, f1
     except:
         print "Got a divide by zero when trying out:", clf
         print "Precision or recall may be undefined due to a lack of true positive predicitons."
@@ -154,9 +157,15 @@ def test_classifier(clf, dataset, feature_list, folds = 1000):
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
+#####Starting with all the features
 features_list = ['poi',
-                 'salary', 'bonus', 'total_stock_value', 'exercised_stock_options', 'total_payments', ##Financial
-                 'to_messages', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi'] ##Email
+                 'salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', ##Financial
+                 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses', ##Financial
+                 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock', 'director_fees', ##Financial
+                 'to_messages', 'from_poi_to_this_person', 'from_messages', ##Email
+                 'from_this_person_to_poi','shared_receipt_with_poi'] ##Email
+
+
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -179,7 +188,7 @@ for subject in data_dict:
 matplotlib.pyplot.scatter(x_axis,salary)
 matplotlib.pyplot.xlabel("salary")
 matplotlib.pyplot.title("Before Removing Total")
-matplotlib.pyplot.show()
+# matplotlib.pyplot.show()
 
 ###Dropping the outlier
 data_dict.pop("TOTAL", 0)
@@ -194,8 +203,47 @@ for subject in data_dict:
 matplotlib.pyplot.scatter(x_axis,salary)
 matplotlib.pyplot.xlabel("salary")
 matplotlib.pyplot.title("After Removing Total")
-matplotlib.pyplot.show()
+# matplotlib.pyplot.show()
 
+####Feature Engineering
+## 1. Removing features with many missing values
+remove_these = ["deferral_payments", "loan_advances",
+                "restricted_stock_deferred", "director_fees"]
+
+features_list = [x for x in features_list if x not in remove_these]
+
+## 2. Get precision and recall for these features
+clf = GaussianNB()
+my_dataset = data_dict
+precision, recall, benchmark_f1 = test_classifier(clf, my_dataset, features_list)
+
+## 3. Starting from feature 1 do the following
+##   a) Remove feature from feature list
+##   b) Check F1 score
+##   c) If F1 score improves discard the feature if not keep it
+
+temp_features = list(features_list)
+
+for feature in features_list[1:]:
+    print "Feature Removed:",feature
+    temp_features.remove(feature)
+    temp_precision, temp_recall, temp_f1 = test_classifier(clf, my_dataset, temp_features)
+    if temp_f1 > benchmark_f1:
+        benchmark_f1 = temp_f1
+        print "Performance improved, discarding feature:", feature
+        print "New Precision:", temp_precision
+        print "New Recall:", temp_recall
+        print "New F1:", temp_f1
+    else:
+        print "Performance not improved, keeping the feature:", feature
+        print "New Precision:", temp_precision
+        print "New Recall:", temp_recall
+        print "New F1:", temp_f1
+        temp_features.append(feature)
+
+features_list = list(temp_features)
+print "Features Selected:"
+print features_list
 
 
 ### Task 3: Create new feature(s)
@@ -217,17 +265,23 @@ for subject in data_dict:
         info["fraction_of_emails_to_poi"] = info["from_this_person_to_poi"]/float(info["from_messages"])
 
 ###Adding the new features to features list
+## Adding fraction_of_emails_from_poi
 features_list.append("fraction_of_emails_from_poi")
+my_dataset = data_dict
+##Check Performance
+precision, recall, f1 = test_classifier(clf, my_dataset, features_list)
+print "After Adding fraction_of_emails_from_poi"
+print precision, recall, f1
+##F1 score hasn't improved discarding "fraction_of_emails_from_poi"
+features_list.remove("fraction_of_emails_from_poi")
+## Adding fraction_of_emails_to_poi
 features_list.append("fraction_of_emails_to_poi")
-
-###Removing the features "from_this_person_to_poi", "from_messages", "from_poi_to_this_person", "to_messages"
-###These are redundant now with the inclusion of new features
-remove_these = ["from_this_person_to_poi", "from_messages",
-                "from_poi_to_this_person", "to_messages"]
-
-features_list = [x for x in features_list if x not in remove_these]
-print features_list
-
+my_dataset = data_dict
+precision, recall, f1 = test_classifier(clf, my_dataset, features_list)
+print "After Adding fraction_of_emails_to_poi"
+print precision, recall, f1
+##F1 score hasn't improved discarding "fraction_of_emails_to_poi"
+features_list.remove("fraction_of_emails_to_poi")
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
@@ -243,13 +297,15 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-# analyze_different_classifiers()
-
+print "***************************************"
+# print "Analyzing different Classifiers"
+# analyze_different_classifiers(features, labels)
+print "***************************************"
 
 
 ###Extract the features for the best classifiers
 clf = Pipeline([('scale', MinMaxScaler()),
-                 ('kbest', SelectKBest(k=5)),
+                 ('kbest', SelectKBest(k=6)),
                  ('nb', GaussianNB())])
 clf.fit(features, labels)
 
@@ -263,7 +319,7 @@ for feature, support, score in zip(features_list[1:], feature_support, scores):
 print "Found best classifier. Dumping the results"
 #best classifier
 clf = Pipeline([('scale', MinMaxScaler()),
-                 ('kbest', SelectKBest(k=5)),
+                 ('kbest', SelectKBest(k=6)),
                  ('nb', GaussianNB())])
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure

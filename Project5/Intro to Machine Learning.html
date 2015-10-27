@@ -224,26 +224,230 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Feature-Selection/Engineering">Feature Selection/Engineering<a class="anchor-link" href="#Feature-Selection/Engineering">&#182;</a></h2><p>From the 20 features, the below features were selected by intuition after watching the enron documentary "The Smartest Guys In The Room" and other material. These features were handpicked.</p>
-<table>
+<h2 id="Feature-Selection/Engineering">Feature Selection/Engineering<a class="anchor-link" href="#Feature-Selection/Engineering">&#182;</a></h2><p>Initially am starting with all the features except the email address which is a string and does not hold much information in this context.</p>
+<h3 id="Step1">Step1<a class="anchor-link" href="#Step1">&#182;</a></h3><table>
 <thead><tr>
 <th style="text-align:left">Feature Type</th>
-<th style="text-align:left">Features</th>
+<th style="text-align:left">Initial Features</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left">Financial</td>
-<td style="text-align:left">'salary', 'bonus', 'total_stock_value', 'exercised_stock_options', 'total_payments'</td>
+<td style="text-align:left">'salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock', 'director_fees'</td>
 </tr>
 <tr>
 <td style="text-align:left">Email</td>
-<td style="text-align:left">'to_messages', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi'</td>
+<td style="text-align:left">'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'poi', 'shared_receipt_with_poi'</td>
 </tr>
 </tbody>
 </table>
+<p>Some features contain a lot of missing values more than 100 in some cases. Removing those features. deferral_payments, loan_advances, restricted_stock_deferred, director_fees</p>
+<h3 id="Step2">Step2<a class="anchor-link" href="#Step2">&#182;</a></h3><table>
+<thead><tr>
+<th style="text-align:left">Feature Type</th>
+<th style="text-align:left">After removing features with many missing values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Financial</td>
+<td style="text-align:left">'salary', 'total_payments', 'bonus', 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock'</td>
+</tr>
+<tr>
+<td style="text-align:left">Email</td>
+<td style="text-align:left">'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'poi', 'shared_receipt_with_poi'</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Recursive-feature-elimination">Recursive feature elimination<a class="anchor-link" href="#Recursive-feature-elimination">&#182;</a></h3><p>In this technique, we start with all features and at each step we remove a feature and look at the performance. If the performance goes up, we discard the feature or else we keep it.</p>
+<p>Following are the benchmark values when all the features from step 2 are taken.</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Features</th>
+<th style="text-align:left">Precision</th>
+<th style="text-align:left">Recall</th>
+<th style="text-align:left">F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">'salary', 'total_payments', 'bonus', 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock', 'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'poi', 'shared_receipt_with_poi'</td>
+<td style="text-align:left">0.34627</td>
+<td style="text-align:left">0.28100</td>
+<td style="text-align:left">0.31024</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Best F1 Score at this point = 0.31024</strong></p>
+<p>Following are the observed values for after removing different features and the corresponding actions taken.</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Feature Removed</th>
+<th style="text-align:left">Precision</th>
+<th style="text-align:left">Recall</th>
+<th style="text-align:left">F1</th>
+<th style="text-align:left">Performance Imroved</th>
+<th style="text-align:left">Feature Discarded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">salary</td>
+<td style="text-align:left">0.366856419987</td>
+<td style="text-align:left">0.29</td>
+<td style="text-align:left">0.323931862608</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">total_payments</td>
+<td style="text-align:left">0.359930110658</td>
+<td style="text-align:left">0.309</td>
+<td style="text-align:left">0.332526230831</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">bonus</td>
+<td style="text-align:left">0.347989949749</td>
+<td style="text-align:left">0.277</td>
+<td style="text-align:left">0.30846325167</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">deferred_income</td>
+<td style="text-align:left">0.296695402299</td>
+<td style="text-align:left">0.2065</td>
+<td style="text-align:left">0.243514150943</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">total_stock_value</td>
+<td style="text-align:left">0.338523644752</td>
+<td style="text-align:left">0.2935</td>
+<td style="text-align:left">0.314408141403</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">expenses</td>
+<td style="text-align:left">0.350369458128</td>
+<td style="text-align:left">0.2845</td>
+<td style="text-align:left">0.314017660044</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">exercised_stock_options</td>
+<td style="text-align:left">0.35400</td>
+<td style="text-align:left">0.29400</td>
+<td style="text-align:left">0.32122</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">other</td>
+<td style="text-align:left">0.390710382514</td>
+<td style="text-align:left">0.3575</td>
+<td style="text-align:left">0.373368146214</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">long_term_incentive</td>
+<td style="text-align:left">0.431791907514</td>
+<td style="text-align:left">0.3735</td>
+<td style="text-align:left">0.400536193029</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">restricted_stock</td>
+<td style="text-align:left">0.415835777126</td>
+<td style="text-align:left">0.3545</td>
+<td style="text-align:left">0.382726045884</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">to_messages</td>
+<td style="text-align:left">0.459915611814</td>
+<td style="text-align:left">0.3815</td>
+<td style="text-align:left">0.417053839847</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">from_poi_to_this_person</td>
+<td style="text-align:left">0.477286869944</td>
+<td style="text-align:left">0.3835</td>
+<td style="text-align:left">0.42528416967</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">from_messages</td>
+<td style="text-align:left">0.43433769187</td>
+<td style="text-align:left">0.382</td>
+<td style="text-align:left">0.406491088055</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">from_this_person_to_poi</td>
+<td style="text-align:left">0.488239033694</td>
+<td style="text-align:left">0.384</td>
+<td style="text-align:left">0.429890848027</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+<tr>
+<td style="text-align:left">shared_receipt_with_poi</td>
+<td style="text-align:left">0.512956810631</td>
+<td style="text-align:left">0.386</td>
+<td style="text-align:left">0.440513552068</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+</tr>
+</tbody>
+</table>
+<p>So the final list of features selected excluding "poi" which is the class label are : 'bonus', 'deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'restricted_stock', 'from_messages'</p>
+<p><strong>Best F1 Score at this point = 0.440513552068 </strong></p>
 <h3 id="Feature-Engineering">Feature Engineering<a class="anchor-link" href="#Feature-Engineering">&#182;</a></h3><p>Two new features were created <strong>"fraction_of_emails_from_poi"</strong> and <strong>"fraction_of_emails_to_poi"</strong>. Instead of considering the total number of emails from or to poi, I used the fraction of emails from or to an user to poi. In case we encounter "NaN" in any of the email values, the value is set to zero.</p>
-<p>After adding these features, the features <strong>"from_this_person_to_poi", "from_messages", "from_poi_to_this_person" and "to_messages"</strong> became redundant and hence were removed from features list.</p>
+<p>Performance did not improve after adding these features and hence the features were discarded.</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Feature Added</th>
+<th style="text-align:left">Precision</th>
+<th style="text-align:left">Recall</th>
+<th style="text-align:left">F1</th>
+<th style="text-align:left">Performance Imroved</th>
+<th style="text-align:left">Feature Discarded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">fraction_of_emails_from_poi</td>
+<td style="text-align:left">0.49870</td>
+<td style="text-align:left">0.38400</td>
+<td style="text-align:left">0.43390</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+<tr>
+<td style="text-align:left">fraction_of_emails_to_poi</td>
+<td style="text-align:left">0.48359</td>
+<td style="text-align:left">0.38300</td>
+<td style="text-align:left">0.42746</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">No</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Best F1 Score at this point = 0.440513552068 </strong></p>
 <h3 id="Feature-Selection">Feature Selection<a class="anchor-link" href="#Feature-Selection">&#182;</a></h3><p>Scikit learn' SelectKBest function is used for feature selection.</p>
 <p>For the best classifier these were the scores for different features. Details on how the best classifier was chosen are mentioned in the following sections.</p>
 <table>
@@ -255,39 +459,39 @@ div#notebook {
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left">salary</td>
-<td style="text-align:left">True</td>
-<td style="text-align:left">18.0037399931     </td>
-</tr>
-<tr>
 <td style="text-align:left">bonus</td>
 <td style="text-align:left">True</td>
-<td style="text-align:left">20.5246451819    </td>
+<td style="text-align:left">19.9898755267  </td>
+</tr>
+<tr>
+<td style="text-align:left">deferred_income</td>
+<td style="text-align:left">True</td>
+<td style="text-align:left">11.0477590807 </td>
 </tr>
 <tr>
 <td style="text-align:left">total_stock_value</td>
 <td style="text-align:left">True</td>
-<td style="text-align:left">23.8982598139     </td>
+<td style="text-align:left">23.3293437062  </td>
+</tr>
+<tr>
+<td style="text-align:left">expenses</td>
+<td style="text-align:left">True</td>
+<td style="text-align:left">5.67653901906  </td>
 </tr>
 <tr>
 <td style="text-align:left">exercised_stock_options</td>
 <td style="text-align:left">True</td>
-<td style="text-align:left">24.5327224631      </td>
+<td style="text-align:left">23.968332134   </td>
 </tr>
 <tr>
-<td style="text-align:left">total_payments</td>
-<td style="text-align:left">False</td>
-<td style="text-align:left">8.66468305459    </td>
-</tr>
-<tr>
-<td style="text-align:left">fraction_of_emails_from_poi</td>
-<td style="text-align:left">False</td>
-<td style="text-align:left">3.04583031504</td>
-</tr>
-<tr>
-<td style="text-align:left">fraction_of_emails_to_poi</td>
+<td style="text-align:left">restricted_stock</td>
 <td style="text-align:left">True</td>
-<td style="text-align:left">16.1778914463</td>
+<td style="text-align:left">8.81209393383</td>
+</tr>
+<tr>
+<td style="text-align:left">from_messages</td>
+<td style="text-align:left">False</td>
+<td style="text-align:left">0.187200230841</td>
 </tr>
 </tbody>
 </table>
@@ -312,7 +516,7 @@ div#notebook {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Parameter-Tuning">Parameter Tuning<a class="anchor-link" href="#Parameter-Tuning">&#182;</a></h3><p>Most of the Machine Learning algorithms have a set of parameters that need to be tuned for them to perform give best performance on a given problem. Scikit learn gives default values to most of these parameters and hence it might not be a good idea to use the default values for every problem we try to solve.</p>
 <p>Parameter tuning can be done in a lot of ways and one of which is to pick a variety of parameters and get the cross validation scores for each of them and then choose the best parameters. This is the approach followed in this study.</p>
-<h3 id="Parameters">Parameters<a class="anchor-link" href="#Parameters">&#182;</a></h3><p>For all the classifiers, parameter k in the SelectKBest function is set to [1,2,3,4,5,6,7].</p>
+<h3 id="Parameters">Parameters<a class="anchor-link" href="#Parameters">&#182;</a></h3><p>For all the classifiers, parameter k in the SelectKBest function is set to [1,2,3,4,5,6,7] as we have seven features from recursive feature elimination.</p>
 <p>Below id the list of algorithms chosen and the parametrs tuned for each of them.</p>
 <table>
 <thead><tr>
@@ -353,42 +557,49 @@ div#notebook {
 <th style="text-align:left">Best Parameters</th>
 <th style="text-align:left">Precision</th>
 <th style="text-align:left">Recall</th>
+<th style="text-align:left">F1</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left">Random Forests</td>
-<td style="text-align:left">n_estimators=30, SelectKBest(k=6)</td>
-<td style="text-align:left">0.46312</td>
-<td style="text-align:left">0.21350</td>
+<td style="text-align:left">n_estimators=10, SelectKBest(k=5)</td>
+<td style="text-align:left">0.41915</td>
+<td style="text-align:left">0.16200</td>
+<td style="text-align:left">0.23368</td>
 </tr>
 <tr>
 <td style="text-align:left">Gradient Boosting</td>
 <td style="text-align:left">n_estimators=100, SelectKBest(k=6)</td>
-<td style="text-align:left">0.37621</td>
-<td style="text-align:left">0.27200</td>
+<td style="text-align:left">0.48258</td>
+<td style="text-align:left">0.33250</td>
+<td style="text-align:left">0.39372</td>
 </tr>
 <tr>
 <td style="text-align:left">Decision Trees</td>
-<td style="text-align:left">min_samples_split=100, SelectKBest(k=1)</td>
-<td style="text-align:left">0.33517</td>
-<td style="text-align:left">0.09100</td>
+<td style="text-align:left">min_samples_split=20, SelectKBest(k=3)</td>
+<td style="text-align:left">0.22464</td>
+<td style="text-align:left">0.11850</td>
+<td style="text-align:left">0.15516</td>
 </tr>
 <tr>
 <td style="text-align:left">SVM</td>
-<td style="text-align:left">C=1000.0, gamma=0.1, SelectKBest(k=4)</td>
-<td style="text-align:left">0.54675</td>
-<td style="text-align:left">0.13450</td>
+<td style="text-align:left">C=100000.0, gamma=0.1, SelectKBest(k=4)</td>
+<td style="text-align:left">0.45064</td>
+<td style="text-align:left">0.14150</td>
+<td style="text-align:left">0.21537</td>
 </tr>
 <tr>
 <td style="text-align:left">Gaussian NB</td>
-<td style="text-align:left">SelectKBest(k=5)</td>
-<td style="text-align:left">0.45384</td>
-<td style="text-align:left">0.32200 </td>
+<td style="text-align:left">SelectKBest(k=6)</td>
+<td style="text-align:left">0.51997</td>
+<td style="text-align:left">0.39050</td>
+<td style="text-align:left">0.44603</td>
 </tr>
 </tbody>
 </table>
-<h3 id="Algorithm-Selected">Algorithm Selected<a class="anchor-link" href="#Algorithm-Selected">&#182;</a></h3><p>Gaussian Naive Bayes Algorithm is selected as it gave the best performance as shown by the resuts mentioned above.</p>
+<h3 id="Algorithm-Selected">Algorithm Selected<a class="anchor-link" href="#Algorithm-Selected">&#182;</a></h3><p>Gaussian Naive Bayes Algorithm is selected as it gave the best performance as shown by the resuts mentioned above. It is slightly better than the best f1 score we had previous to this step.</p>
+<p><strong>Best F1 Score at this point = 0.44603 </strong></p>
 <h3 id="Precision-and-Recall-in-the-context-of-this-project">Precision and Recall in the context of this project<a class="anchor-link" href="#Precision-and-Recall-in-the-context-of-this-project">&#182;</a></h3><p>Following are the results for 1000 fold cross validation when using our best classifier</p>
 <table>
 <thead><tr>
@@ -399,39 +610,43 @@ div#notebook {
 <tbody>
 <tr>
 <td style="text-align:left">Accuracy</td>
-<td style="text-align:left">0.85793</td>
+<td style="text-align:left">0.86143</td>
 </tr>
 <tr>
 <td style="text-align:left">Precision</td>
-<td style="text-align:left">0.45384</td>
+<td style="text-align:left">0.51997</td>
 </tr>
 <tr>
 <td style="text-align:left">Recall</td>
-<td style="text-align:left">0.32200</td>
+<td style="text-align:left">0.39050</td>
+</tr>
+<tr>
+<td style="text-align:left">F1 Score</td>
+<td style="text-align:left">0.44603</td>
 </tr>
 <tr>
 <td style="text-align:left">Total predictions</td>
-<td style="text-align:left">15000</td>
+<td style="text-align:left">14000</td>
 </tr>
 <tr>
 <td style="text-align:left">True positives</td>
-<td style="text-align:left">644</td>
+<td style="text-align:left">781</td>
 </tr>
 <tr>
 <td style="text-align:left">False positives</td>
-<td style="text-align:left">775</td>
+<td style="text-align:left">721</td>
 </tr>
 <tr>
 <td style="text-align:left">False negatives</td>
-<td style="text-align:left">1356</td>
+<td style="text-align:left">1219</td>
 </tr>
 <tr>
 <td style="text-align:left">True negatives</td>
-<td style="text-align:left">12225</td>
+<td style="text-align:left">11279</td>
 </tr>
 </tbody>
 </table>
-<p>Our classifier has a precision of 0.45 that means with a probability of 0.45 we catch the POI. Our recall is 0.32 which means there is a 32% chance that when we our algorithm predicts a POI, it is actually a POI.</p>
+<p>Our classifier has a precision of 0.52 that means with a probability of 0.52 we catch the POI. Our recall is 0.39 which means there is a 39% chance that when we our algorithm predicts a POI, it is actually a POI.</p>
 <p>In this case we need our precision to be a lot higher even at the cost of low recall, as we need to catch all the culprits and even though we flag some of the innocents as POI, they will undergo trial and eventually be aquitted.</p>
 
 </div>
