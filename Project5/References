@@ -1,0 +1,7 @@
+http://stackoverflow.com/questions/32543654/scikit-learn-get-selected-features-when-using-selectkbest-within-pipeline
+http://scikit-learn.org/stable/auto_examples/feature_selection/feature_selection_pipeline.html#example-feature-selection-feature-selection-pipeline-py
+http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html
+http://scikit-learn.org/stable/auto_examples/model_selection/grid_search_digits.html#example-model-selection-grid-search-digits-py
+http://stackoverflow.com/questions/23174964/how-to-gridsearch-over-transform-arguments-within-a-pipeline-in-scikit-learn
+http://stackoverflow.com/questions/13324071/scaling-data-in-scikit-learn-svm
+http://ceas.cc/2004/168.pdf
